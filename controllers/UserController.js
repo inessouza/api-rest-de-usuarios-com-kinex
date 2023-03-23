@@ -6,6 +6,18 @@ class UserController {
         res.json(users)
     }
 
+    async findUser(req, res) {
+        var id = req.params.id
+        var user = await User.findById(id)
+        if (user == undefined) {
+            res.status(404)
+            res.json({})
+        } else {
+            res.status(200)
+            res.json(user)
+        }
+    }
+
     async create(req, res) {
         var { email, name, password } = req.body
 
@@ -27,6 +39,36 @@ class UserController {
 
         res.status(200)
         res.send("Tudo Ok!")
+    }
+
+    async edit(req, res) {
+        var {id, name, email, role} = req.body
+        var result = await User.update(id, name, email, role)
+        if (result != undefined) {
+            if (result.status) {
+                res.status(200)
+                res.send("Tudo OK!")
+            } else {
+                res.status(406)
+                res.send(result.err)
+            }
+        } else {
+            res.status(406)
+            res.send("Ocorreu um erro no servidor!")
+        }
+    }
+
+    async delete(req, res) {
+        var id = req.params.id
+        var result = await User.delete(id)
+
+        if (result.status) {
+            res.status(200)
+            res.send("Tudo OK!")
+        } else {
+            res.status(406)
+            res.send(result.err)
+        }
     }
 }
 

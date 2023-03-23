@@ -5,3 +5,9 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   role INT
 );
+
+CREATE TABLE password_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(200) NOT NULL,
+  user_id INT NOT NULL
+);
