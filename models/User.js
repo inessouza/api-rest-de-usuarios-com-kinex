@@ -1,10 +1,25 @@
 var knex = require("../database/connection")
 var bcrypt = require("bcrypt")
+const PasswordToken = require("./PasswordToken")
 
 class User {
     async findById(id) {
         try {
             var result = await knex.select("id", "name", "email", "role").where({id: id}).table("users")
+            if (result.length > 0) {
+                return result[0]
+            } else {
+                return undefined
+            }
+        } catch(err) {
+            console.log(err)
+            return []
+        }
+    }
+
+    async findByEmail(email) {
+        try {
+            var result = await knex.select("id", "name", "password", "email", "role").where({email: email}).table("users")
             if (result.length > 0) {
                 return result[0]
             } else {
@@ -92,6 +107,12 @@ class User {
         } else {
             return {status: false, err: "Usuário não existe, portanto não pode ser deletado!"}
         }
+    }
+
+    async changePassword(newPassword, id, token) {
+        var hash = await bcrypt.hash(newPassword, 10)
+        await knex.update({password: hash}).where({id: id}).table("users")
+        await PasswordToken.setUsed(token)
     }
 }
 
